@@ -1,6 +1,6 @@
 Name:           fceux
 Version:        2.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
@@ -132,6 +132,9 @@ fi
 
 
 %changelog
+* Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-3
+- Mass rebuilt for Fedora 19 Features
+
 * Sat Apr 28 2012 Andrea Musuruane <musuruan@gmail.com> 2.1.5-2
 - Obsoleted gfceu too
 - Notified upstream about underlinking
