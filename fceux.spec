@@ -1,31 +1,25 @@
 Name:           fceux
-Version:        2.1.5
-Release:        2%{?dist}
+Version:        2.2.1
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
 License:        GPLv2+
 URL:            http://fceux.com/
-Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.bz2
-# Fix compiling
-# https://bugs.gentoo.org/show_bug.cgi?id=406471
-# Upstream SVN rev 2395
-Patch0:         %{name}-2.1.5-datatype-gz.patch
-# Fix underlinking
-# https://bugs.gentoo.org/show_bug.cgi?id=367675
-# http://sourceforge.net/tracker/?func=detail&aid=3522221&group_id=13536&atid=113536
-Patch1:         %{name}-2.1.5-underlink.patch
-# Use system minizip
-# https://sourceforge.net/tracker/?func=detail&aid=3520369&group_id=13536&atid=113536
-Patch2:         %{name}-2.1.5-minizip.patch
-# Fix compiling with GCC 4.7
-# Upstream SVN rev 2484
-Patch3:         %{name}-2.1.5-gcc47.patch
+Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
+# Patches from Debian
+# Fix format string
+Patch0:         %{name}-2.2.1-fix_format_string_security_error.patch
+# Set default GtkFileChooser directory for scripts and palettes
+Patch1:         %{name}-2.2.1-set-script-and-palette-gtkfilechooser-default-directory.patch
+# Use system Lua instead of bundled version
+Patch2:         %{name}-2.2.1-use_system_lua.patch
 
 BuildRequires:  scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
+BuildRequires:  lua-devel >= 5.1
 BuildRequires:  minizip-devel
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
@@ -47,16 +41,28 @@ of all worlds for the casual player, the ROM-hacking community, Lua
 Scripters, and the Tool-Assisted Speedrun Community.
 
 
-%prep
-%setup -q -n fceu%{version}
-%patch0 -p2
-%patch1 -p0
-%patch2 -p1
-%patch3 -p1
+%package net-server
+Summary: Server for the FCEUX emulator
 
-# Remove binary files
-rm -rf bin/fceux
-rm -rf src/fceux
+%description net-server
+FCEUX clients can connect to this server and play multiplayer NES games over 
+the network. 
+
+
+%prep
+%setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+
+# Remove windows binary
+rm fceux-server/fceux-net-server.exe
+
+# Remove ~attic directories
+find . -name '~attic' -type d -prune -exec rm -rf {} \;
+
+# Remove Visual Studio directory
+rm -rf vc
 
 # Remove bundled LUA library
 rm -rf src/lua
@@ -64,14 +70,11 @@ sed -i 's/^lua//' src/SConscript
 
 # Remove bundled minizip library
 rm -rf src/utils/unzip.*
-sed -i 's/^unzip.cpp//' src/utils/SConscript
-
-# Remove default CFLAGS
-sed -i 's/^env.Append(CCFLAGS/#env.Append(CCFLAGS/' SConstruct
 
 # Fix end-of-line-encoding
-sed -i 's/\r//' Authors.txt changelog.txt TODO-PROJECT \
-  documentation/Videolog.txt
+sed -i 's/\r//' changelog.txt NewPPUtests.txt \
+  documentation/Videolog.txt \
+  fceux-server/{AUTHORS,ChangeLog,README}
 
 # Fix icon path in desktop file
 sed -i 's/\/usr\/share\/pixmaps\/fceux.png/fceux/' fceux.desktop
@@ -79,17 +82,23 @@ sed -i 's/\/usr\/share\/pixmaps\/fceux.png/fceux/' fceux.desktop
 
 %build
 export CFLAGS="%{optflags}"
-# Disable LUA support
+# Enable system minizip
 # Enable AVI creation
 scons %{?_smp_mflags} \
-  LUA=0 \
+  SYSTEM_MINIZIP=1 \
   CREATE_AVI=1
 
 
 %install
-# Install binary file
+# Install binary files
 install -d %{buildroot}%{_bindir}
-install -p -m 755 src/fceux %{buildroot}%{_bindir}
+install -p -m 755 bin/fceux %{buildroot}%{_bindir}
+install -p -m 755 bin/fceux-net-server %{buildroot}%{_bindir}
+
+# Install data
+install -d %{buildroot}%{_datadir}/%{name}
+install -p -m 644 bin/auxlib.lua %{buildroot}%{_datadir}/%{name}
+cp -pR output/* %{buildroot}%{_datadir}/%{name} 
 
 # Install icon
 install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
@@ -101,10 +110,17 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   %{name}.desktop
 
-# Install man page
+# Install man pages
 install -d %{buildroot}%{_mandir}/man6
-install -p -m 644 documentation/%{name}.6 \
-  %{buildroot}%{_mandir}/man6/%{name}.6
+install -p -m 644 documentation/fceux.6 \
+  %{buildroot}%{_mandir}/man6/
+install -p -m 644 documentation/fceux-net-server.6 \
+  %{buildroot}%{_mandir}/man6/
+
+# Install config file
+install -d %{buildroot}%{_sysconfdir}
+install -p -m 644 fceux-server/fceux-server.conf \
+  %{buildroot}%{_sysconfdir}
 
 
 %post
@@ -123,15 +139,31 @@ fi
 
 
 %files
-%{_bindir}/fceux
+%{_bindir}/%{name}
+%{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_mandir}/man6/%{name}.6*
-%doc Authors.txt changelog.txt COPYING README-SDL TODO-PROJECT TODO-SDL
-%doc documentation/{cheat.html,faq,todo,Videolog.txt}
+%doc Authors changelog.txt COPYING NewPPUtests.txt README-SDL TODO-SDL
+%doc documentation/{cheat.html,faq,todo,TODO-PROJECT,Videolog.txt}
+
+%files net-server
+%{_bindir}/fceux-net-server
+%config(noreplace) %{_sysconfdir}/fceux-server.conf
+%{_mandir}/man6/fceux-net-server.6*
+%doc fceux-server/{AUTHORS,ChangeLog,COPYING,README}
 
 
 %changelog
+* Tue Apr 02 2013 Andrea Musuruane <musuruan@gmail.com> - 2.2.1-1
+- Updated to new upstream realease
+- Packaged fceux-net-server too
+- Imported Debian patches
+- Enabled LUA scripting
+
+* Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.1.5-3
+- Mass rebuilt for Fedora 19 Features
+
 * Sat Apr 28 2012 Andrea Musuruane <musuruan@gmail.com> 2.1.5-2
 - Obsoleted gfceu too
 - Notified upstream about underlinking
