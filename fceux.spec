@@ -1,6 +1,6 @@
 Name:           fceux
 Version:        2.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
@@ -155,6 +155,9 @@ fi
 
 
 %changelog
+* Wed Jun 12 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-2
+- Rebuilt for GD 2.1.0
+
 * Tue Apr 02 2013 Andrea Musuruane <musuruan@gmail.com> - 2.2.1-1
 - Updated to new upstream realease
 - Packaged fceux-net-server too
