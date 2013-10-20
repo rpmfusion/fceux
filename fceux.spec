@@ -1,25 +1,22 @@
 Name:           fceux
-Version:        2.2.1
-Release:        2%{?dist}
+Version:        2.2.2
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
-# Patches from Debian
-# Fix format string
-Patch0:         %{name}-2.2.1-fix_format_string_security_error.patch
-# Set default GtkFileChooser directory for scripts and palettes
-Patch1:         %{name}-2.2.1-set-script-and-palette-gtkfilechooser-default-directory.patch
-# Use system Lua instead of bundled version
-Patch2:         %{name}-2.2.1-use_system_lua.patch
 
 BuildRequires:  scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
-BuildRequires:  lua-devel >= 5.1
+%if 0%{?fedora} >= 20
+BuildRequires:  compat-lua-devel
+%else
+BuildRequires:  lua-devel
+%endif
 BuildRequires:  minizip-devel
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
@@ -51,9 +48,6 @@ the network.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 # Remove windows binary
 rm fceux-server/fceux-net-server.exe
@@ -66,7 +60,9 @@ rm -rf vc
 
 # Remove bundled LUA library
 rm -rf src/lua
-sed -i 's/^lua//' src/SConscript
+
+# Fix for LUA 5.1
+sed -i 's/lua5.1/lua-5.1/' SConstruct
 
 # Remove bundled minizip library
 rm -rf src/utils/unzip.*
@@ -76,15 +72,19 @@ sed -i 's/\r//' changelog.txt NewPPUtests.txt \
   documentation/Videolog.txt \
   fceux-server/{AUTHORS,ChangeLog,README}
 
-# Fix icon path in desktop file
+# Fix desktop file
 sed -i 's/\/usr\/share\/pixmaps\/fceux.png/fceux/' fceux.desktop
+sed -i '/MimeType=*/s/$/;/' fceux.desktop
+sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
 
 
 %build
 export CFLAGS="%{optflags}"
+# Enable system LUA
 # Enable system minizip
 # Enable AVI creation
 scons %{?_smp_mflags} \
+  SYSTEM_LUA=1 \
   SYSTEM_MINIZIP=1 \
   CREATE_AVI=1
 
@@ -97,8 +97,8 @@ install -p -m 755 bin/fceux-net-server %{buildroot}%{_bindir}
 
 # Install data
 install -d %{buildroot}%{_datadir}/%{name}
-install -p -m 644 bin/auxlib.lua %{buildroot}%{_datadir}/%{name}
-cp -pR output/* %{buildroot}%{_datadir}/%{name} 
+cp -pR output/{palettes,luaScripts} %{buildroot}%{_datadir}/%{name}
+install -p -m 644 bin/auxlib.lua %{buildroot}%{_datadir}/%{name}/luaScripts/
 
 # Install icon
 install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
@@ -155,6 +155,11 @@ fi
 
 
 %changelog
+* Sat Oct 19 2013 Andrea Musuruane <musuruan@gmail.com> - 2.2.2-1
+- Updated to new upstream realease
+- Removed non longer needed patches
+- Built with compat-lua for F20+
+
 * Wed Jun 12 2013 Nicolas Chauvet <kwizart@gmail.com> - 2.2.1-2
 - Rebuilt for GD 2.1.0
 
