@@ -1,6 +1,6 @@
 Name:           fceux
 Version:        2.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
@@ -125,6 +125,7 @@ install -p -m 644 fceux-server/fceux-server.conf \
 
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/update-desktop-database &> /dev/null || :
 
 
 %postun
@@ -132,6 +133,7 @@ if [ $1 -eq 0 ] ; then
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+/usr/bin/update-desktop-database &> /dev/null || :
 
 
 %posttrans
@@ -155,6 +157,9 @@ fi
 
 
 %changelog
+* Wed Oct 23 2013 Andrea Musuruane <musuruan@gmail.com> - 2.2.2-2
+- Added missing update of desktop database
+
 * Sat Oct 19 2013 Andrea Musuruane <musuruan@gmail.com> - 2.2.2-1
 - Updated to new upstream realease
 - Removed non longer needed patches
