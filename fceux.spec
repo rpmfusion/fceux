@@ -1,6 +1,6 @@
 Name:           fceux
 Version:        2.2.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 Group:          Applications/Emulators
@@ -157,6 +157,9 @@ fi
 
 
 %changelog
+* Sun Mar 19 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 2.2.2-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 2.2.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
