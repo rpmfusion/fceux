@@ -1,9 +1,8 @@
 Name:           fceux
-Version:        2.2.2
-Release:        4%{?dist}
+Version:        2.2.3
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
-Group:          Applications/Emulators
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
@@ -12,11 +11,7 @@ BuildRequires:  scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
-%if 0%{?fedora} >= 20
 BuildRequires:  compat-lua-devel
-%else
-BuildRequires:  lua-devel
-%endif
 BuildRequires:  minizip-devel
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
@@ -157,6 +152,10 @@ fi
 
 
 %changelog
+* Sun Jun 11 2017 Andrea Musuruane <musuruan@gmail.com> - 2.2.3-1
+- Updated to new upstream release
+- Dropped obsolete Group tag
+
 * Sun Mar 19 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 2.2.2-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
