@@ -1,18 +1,23 @@
 Name:           fceux
 Version:        2.2.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
 
+BuildRequires:  gcc-c++
 BuildRequires:  scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
 BuildRequires:  compat-lua-devel
+%if 0%{?fedora} >= 30
+BuildRequires:  minizip-compat-devel
+%else
 BuildRequires:  minizip-devel
+%endif
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
 Provides:       fceultra = %{version}-%{release}
@@ -74,7 +79,7 @@ sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
 
 
 %build
-export CFLAGS="%{optflags}"
+%set_build_flags macro
 # Enable system LUA
 # Enable system minizip
 # Enable AVI creation
@@ -118,40 +123,33 @@ install -p -m 644 fceux-server/fceux-server.conf \
   %{buildroot}%{_sysconfdir}
 
 
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-/usr/bin/update-desktop-database &> /dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-/usr/bin/update-desktop-database &> /dev/null || :
-
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
-
 %files
 %{_bindir}/%{name}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_mandir}/man6/%{name}.6*
-%doc Authors changelog.txt COPYING NewPPUtests.txt README-SDL TODO-SDL
+%doc Authors changelog.txt NewPPUtests.txt README-SDL TODO-SDL
 %doc documentation/{cheat.html,faq,todo,TODO-PROJECT,Videolog.txt}
+%license COPYING
 
 %files net-server
 %{_bindir}/fceux-net-server
 %config(noreplace) %{_sysconfdir}/fceux-server.conf
 %{_mandir}/man6/fceux-net-server.6*
-%doc fceux-server/{AUTHORS,ChangeLog,COPYING,README}
+%doc fceux-server/{AUTHORS,ChangeLog,README}
+%license COPYING
 
 
 %changelog
+* Thu Mar 07 2019 Andrea Musuruane <musuruan@gmail.com> - 2.2.3-6
+- Added gcc-c++ dependency
+- Updated BR to minizip-compat-devel for F30+
+- Used %%set_build_flags macro
+- Removed desktop scriptlets
+- Removed update-desktop-database
+- Added license tag
+
 * Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.2.3-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
