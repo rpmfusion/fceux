@@ -8,7 +8,7 @@ URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
 
 BuildRequires:  gcc-c++
-BuildRequires:  scons
+BuildRequires:  python2-scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
@@ -83,7 +83,7 @@ sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
 # Enable system LUA
 # Enable system minizip
 # Enable AVI creation
-scons %{?_smp_mflags} \
+scons-2 %{?_smp_mflags} \
   SYSTEM_LUA=1 \
   SYSTEM_MINIZIP=1 \
   CREATE_AVI=1
