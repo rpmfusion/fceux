@@ -1,14 +1,17 @@
 Name:           fceux
 Version:        2.2.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
+# Fix building with python3 scons
+# Patch from ArchLinux
+Patch0:         %{name}-2.2.3-scons-python3.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  python2-scons
+BuildRequires:  scons
 BuildRequires:  SDL-devel >= 1.2.14
 BuildRequires:  gtk2-devel >= 2.18
 BuildRequires:  gd-devel
@@ -20,6 +23,7 @@ BuildRequires:  minizip-devel
 %endif
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
+
 Provides:       fceultra = %{version}-%{release}
 Obsoletes:      fceultra < 2.0.0
 Provides:       gfceu = %{version}-%{release}
@@ -47,7 +51,7 @@ the network.
 
 
 %prep
-%setup -q
+%autosetup -p1
 
 # Remove windows binary
 rm fceux-server/fceux-net-server.exe
@@ -83,7 +87,7 @@ sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
 # Enable system LUA
 # Enable system minizip
 # Enable AVI creation
-scons-2 %{?_smp_mflags} \
+scons %{?_smp_mflags} \
   SYSTEM_LUA=1 \
   SYSTEM_MINIZIP=1 \
   CREATE_AVI=1
@@ -142,6 +146,9 @@ install -p -m 644 fceux-server/fceux-server.conf \
 
 
 %changelog
+* Sat Aug 10 2019 Andrea Musuruane <musuruan@gmail.com> - 2.2.3-8
+- Fixed building with python3 scons
+
 * Fri Aug 09 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.2.3-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
