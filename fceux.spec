@@ -1,6 +1,6 @@
 Name:           fceux
 Version:        2.2.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -146,6 +146,9 @@ install -p -m 644 fceux-server/fceux-server.conf \
 
 
 %changelog
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.2.3-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Sat Aug 10 2019 Andrea Musuruane <musuruan@gmail.com> - 2.2.3-8
 - Fixed building with python3 scons
 
