@@ -1,25 +1,26 @@
+%undefine __cmake_in_source_build
+
+%global giturl https://github.com/TASVideos/fceux.git
+%global commit 65c5b0d2a1c08db75bb41340bfa5534578926944
+
 Name:           fceux
-Version:        2.2.3
-Release:        10%{?dist}
+Version:        2.3.0
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
-Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.src.tar.gz
-# Fix building with python3 scons
-# Patch from ArchLinux
-Patch0:         %{name}-2.2.3-scons-python3.patch
+Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc-c++
-BuildRequires:  scons
-BuildRequires:  SDL-devel >= 1.2.14
-BuildRequires:  gtk2-devel >= 2.18
-BuildRequires:  gd-devel
+BuildRequires:  cmake
+BuildRequires:  SDL2-devel
+BuildRequires:  qt5-qtbase-devel
 BuildRequires:  compat-lua-devel
-%if 0%{?fedora} >= 30
-BuildRequires:  minizip-compat-devel
-%else
+%if 0%{?rhel}
 BuildRequires:  minizip-devel
+%else
+BuildRequires:  minizip-compat-devel
 %endif
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
@@ -28,6 +29,7 @@ Provides:       fceultra = %{version}-%{release}
 Obsoletes:      fceultra < 2.0.0
 Provides:       gfceu = %{version}-%{release}
 Obsoletes:      gfceu <= 0.6.2
+Obsoletes:      fceux-net-server <= 2.2.3
 
 
 %description
@@ -42,22 +44,11 @@ of all worlds for the casual player, the ROM-hacking community, Lua
 Scripters, and the Tool-Assisted Speedrun Community.
 
 
-%package net-server
-Summary: Server for the FCEUX emulator
-
-%description net-server
-FCEUX clients can connect to this server and play multiplayer NES games over 
-the network. 
-
-
 %prep
-%autosetup -p1
+%autosetup
 
-# Remove windows binary
-rm fceux-server/fceux-net-server.exe
-
-# Remove ~attic directories
-find . -name '~attic' -type d -prune -exec rm -rf {} \;
+# Remove attic directories
+find . -name 'attic' -type d -prune -exec rm -rf {} \;
 
 # Remove Visual Studio directory
 rm -rf vc
@@ -65,66 +56,45 @@ rm -rf vc
 # Remove bundled LUA library
 rm -rf src/lua
 
-# Fix for LUA 5.1
-sed -i 's/lua5.1/lua-5.1/' SConstruct
-
 # Remove bundled minizip library
 rm -rf src/utils/unzip.*
 
 # Fix end-of-line-encoding
 sed -i 's/\r//' changelog.txt NewPPUtests.txt \
-  documentation/Videolog.txt \
-  fceux-server/{AUTHORS,ChangeLog,README}
+  documentation/Videolog.txt
 
 # Fix desktop file
-sed -i 's/\/usr\/share\/pixmaps\/fceux.png/fceux/' fceux.desktop
+sed -i 's/\/usr\/share\/pixmaps\/fceux1.png/fceux/' fceux.desktop
 sed -i '/MimeType=*/s/$/;/' fceux.desktop
 sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
 
+# Public release
+sed -i 's!//#define PUBLIC_RELEASE!#define PUBLIC_RELEASE!' src/version.h
+
+# Set git data
+sed -i -r 's!(GIT_URL=).+!\1"%{giturl}"!' scripts/genGitHdr.sh
+sed -i -r 's!(GIT_REV=).+!\1"%{commit}"!' scripts/genGitHdr.sh
+
 
 %build
-%set_build_flags macro
-# Enable system LUA
-# Enable system minizip
-# Enable AVI creation
-scons %{?_smp_mflags} \
-  SYSTEM_LUA=1 \
-  SYSTEM_MINIZIP=1 \
-  CREATE_AVI=1
+%cmake
+%cmake_build
 
 
 %install
-# Install binary files
-install -d %{buildroot}%{_bindir}
-install -p -m 755 bin/fceux %{buildroot}%{_bindir}
-install -p -m 755 bin/fceux-net-server %{buildroot}%{_bindir}
+%cmake_install
 
-# Install data
-install -d %{buildroot}%{_datadir}/%{name}
-cp -pR output/{palettes,luaScripts} %{buildroot}%{_datadir}/%{name}
-install -p -m 644 bin/auxlib.lua %{buildroot}%{_datadir}/%{name}/luaScripts/
-
-# Install icon
+# Install icons
 install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
 install -p -m 644 %{name}.png \
   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -d %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
+install -p -m 644 %{name}1.png \
+  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
 
-# Install desktop file
-desktop-file-install \
-  --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
-
-# Install man pages
-install -d %{buildroot}%{_mandir}/man6
-install -p -m 644 documentation/fceux.6 \
-  %{buildroot}%{_mandir}/man6/
-install -p -m 644 documentation/fceux-net-server.6 \
-  %{buildroot}%{_mandir}/man6/
-
-# Install config file
-install -d %{buildroot}%{_sysconfdir}
-install -p -m 644 fceux-server/fceux-server.conf \
-  %{buildroot}%{_sysconfdir}
+# Validate desktop file
+desktop-file-validate \
+  %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
@@ -132,20 +102,19 @@ install -p -m 644 fceux-server/fceux-server.conf \
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
+%exclude %{_datadir}/pixmaps/%{name}1.png
 %{_mandir}/man6/%{name}.6*
-%doc Authors changelog.txt NewPPUtests.txt README-SDL TODO-SDL
+%exclude %{_mandir}/man6/%{name}-net-server.6*
+%doc changelog.txt NewPPUtests.txt README TODO-SDL
 %doc documentation/{cheat.html,faq,todo,TODO-PROJECT,Videolog.txt}
-%license COPYING
-
-%files net-server
-%{_bindir}/fceux-net-server
-%config(noreplace) %{_sysconfdir}/fceux-server.conf
-%{_mandir}/man6/fceux-net-server.6*
-%doc fceux-server/{AUTHORS,ChangeLog,README}
 %license COPYING
 
 
 %changelog
+* Mon Jan  4 11:08:08 CET 2021 Andrea Musuruane <musuruan@gmail.com> - 2.3.0-1
+- Updated to new upstream release
+- Obsoleted fceux-net-server because it is no longer supported upsteam
+
 * Mon Aug 17 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.2.3-10
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
