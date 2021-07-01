@@ -1,11 +1,11 @@
 %undefine __cmake_in_source_build
 
 %global giturl https://github.com/TASVideos/fceux.git
-%global commit 65c5b0d2a1c08db75bb41340bfa5534578926944
+%global commit 941da60ecb283263a3810ed199d80abf94bd6494
 
 Name:           fceux
-Version:        2.3.0
-Release:        2%{?dist}
+Version:        2.4.0
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -22,6 +22,7 @@ BuildRequires:  minizip-devel
 %else
 BuildRequires:  minizip-compat-devel
 %endif
+BuildRequires:  x264-devel
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
 
@@ -64,6 +65,7 @@ sed -i 's/\r//' changelog.txt NewPPUtests.txt \
   documentation/Videolog.txt
 
 # Fix desktop file
+sed -i '/Encoding=/d' fceux.desktop
 sed -i 's/\/usr\/share\/pixmaps\/fceux1.png/fceux/' fceux.desktop
 sed -i '/MimeType=*/s/$/;/' fceux.desktop
 sed -i '/OnlyShowIn=*/s/$/;/' fceux.desktop
@@ -88,9 +90,9 @@ sed -i -r 's!(GIT_REV=).+!\1"%{commit}"!' scripts/genGitHdr.sh
 install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
 install -p -m 644 %{name}.png \
   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-install -d %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
+install -d %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
 install -p -m 644 %{name}1.png \
-  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
 
 # Validate desktop file
 desktop-file-validate \
@@ -111,6 +113,9 @@ desktop-file-validate \
 
 
 %changelog
+* Thu Jul 01 2021 Andrea Musuruane <musuruan@gmail.com> - 2.4.0-1
+- Updated to new upstream release
+
 * Wed Feb 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.3.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
