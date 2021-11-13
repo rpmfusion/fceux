@@ -4,8 +4,8 @@
 %global commit 941da60ecb283263a3810ed199d80abf94bd6494
 
 Name:           fceux
-Version:        2.4.0
-Release:        3%{?dist}
+Version:        2.5.0
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -23,6 +23,8 @@ BuildRequires:  minizip-devel
 BuildRequires:  minizip-compat-devel
 %endif
 BuildRequires:  x264-devel
+BuildRequires:  x265-devel
+BuildRequires:  ffmpeg-devel
 BuildRequires:  desktop-file-utils
 Requires:       hicolor-icon-theme
 
@@ -113,6 +115,9 @@ desktop-file-validate \
 
 
 %changelog
+* Fri Nov 12 2021 Andrea Musuruane <musuruan@gmail.com> - 2.5.0-1
+- Updated to new upstream release
+
 * Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 2.4.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
