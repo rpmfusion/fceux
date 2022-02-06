@@ -2,7 +2,7 @@
 %global commit 7173d283c3a12f634ad5189c5a90ff495e1d266a
 
 Name:           fceux
-Version:        2.6.1
+Version:        2.6.2
 Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
@@ -113,6 +113,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sat Feb 05 2022 Andrea Musuruane <musuruan@gmail.com> - 2.6.2-1
+- Updated to new upstream release
+
 * Tue Jan 18 2022 Andrea Musuruane <musuruan@gmail.com> - 2.6.1-1
 - Updated to new upstream release
 
