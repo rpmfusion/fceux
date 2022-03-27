@@ -1,8 +1,8 @@
 %global giturl https://github.com/TASVideos/fceux.git
-%global commit 84cf82cb6a5b1d486523855e056ecebed34d7862
+%global commit 2b8c61802029721229a26592e4578f92efe814fb
 
 Name:           fceux
-Version:        2.6.3
+Version:        2.6.4
 Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
@@ -113,6 +113,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sun Mar 27 2022 Andrea Musuruane <musuruan@gmail.com> - 2.6.4-1
+- Updated to new upstream release
+
 * Sat Mar 12 2022 Andrea Musuruane <musuruan@gmail.com> - 2.6.3-1
 - Updated to new upstream release
 
