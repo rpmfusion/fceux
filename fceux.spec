@@ -3,12 +3,13 @@
 
 Name:           fceux
 Version:        2.6.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.tar.gz
+Patch0:         gcc13.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
@@ -46,7 +47,7 @@ Scripters, and the Tool-Assisted Speedrun Community.
 
 
 %prep
-%autosetup
+%autosetup -p1
 
 # Remove attic directories
 find . -name 'attic' -type d -prune -exec rm -rf {} \;
@@ -113,6 +114,9 @@ desktop-file-validate \
 
 
 %changelog
+* Fri Mar 03 2023 Leigh Scott <leigh123linux@gmail.com> - 2.6.4-4
+- Rebuild for new ffmpeg
+
 * Sun Aug 07 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 2.6.4-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1

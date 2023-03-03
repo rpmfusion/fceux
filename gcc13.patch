@@ -1,0 +1,10 @@
+--- a/src/drivers/Qt/AboutWindow.cpp
++++ b/src/drivers/Qt/AboutWindow.cpp
+@@ -19,6 +19,7 @@
+  */
+ // AboutWindow.cpp
+ //
++#include <cstdint>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
