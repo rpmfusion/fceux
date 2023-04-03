@@ -1,14 +1,14 @@
 %global giturl https://github.com/TASVideos/fceux.git
-%global commit 2b8c61802029721229a26592e4578f92efe814fb
+%global commit ea6ed69b874e3ae94072f1b4f14b9a8f0fdd774b
 
 Name:           fceux
-Version:        2.6.4
-Release:        4%{?dist}
+Version:        2.6.5
+Release:        1%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
-Source:         http://downloads.sourceforge.net/fceultra/%{name}-%{version}.tar.gz
+Source:         https://github.com/TASEmulators/fceux/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         gcc13.patch
 
 BuildRequires:  gcc-c++
@@ -114,6 +114,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sun Apr 02 2023 Andrea Musuruane <musuruan@gmail.com> - 2.6.5-1
+- Updated to new upstream release
+
 * Fri Mar 03 2023 Leigh Scott <leigh123linux@gmail.com> - 2.6.4-4
 - Rebuild for new ffmpeg
 
