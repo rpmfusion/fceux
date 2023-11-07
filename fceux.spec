@@ -3,13 +3,16 @@
 
 Name:           fceux
 Version:        2.6.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
 URL:            http://fceux.com/
 Source:         https://github.com/TASEmulators/fceux/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Patch0:         gcc13.patch
+# Added feature macro __FCEU_X86_TSC_ENABLE to enable usage of the X86 TSC
+# https://github.com/TASEmulators/fceux/issues/663
+Patch1:         fceux-2.6.6-timestamp-nonx86.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
@@ -114,6 +117,9 @@ desktop-file-validate \
 
 
 %changelog
+* Tue Nov 07 2023 Andrea Musuruane <musuruan@gmail.com> - 2.6.6-2
+- Added a patch to fix building on non-x86 CPUs
+
 * Wed Aug 30 2023 Andrea Musuruane <musuruan@gmail.com> - 2.6.6-1
 - Updated to new upstream release
 
