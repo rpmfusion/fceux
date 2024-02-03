@@ -3,7 +3,7 @@
 
 Name:           fceux
 Version:        2.6.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -117,6 +117,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sat Feb 03 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 2.6.6-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
 * Tue Nov 07 2023 Andrea Musuruane <musuruan@gmail.com> - 2.6.6-2
 - Added a patch to fix building on non-x86 CPUs
 
