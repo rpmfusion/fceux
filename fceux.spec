@@ -3,7 +3,7 @@
 
 Name:           fceux
 Version:        2.6.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -117,6 +117,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sat Nov 23 2024 Leigh Scott <leigh123linux@gmail.com> - 2.6.6-7
+- Rebuild for new x265
+
 * Sat Oct 26 2024 Andrea Musuruane <musuruan@gmail.com> - 2.6.6-6
 - Rebuild for ffmpeg 7
 
