@@ -1,0 +1,11 @@
+diff -durN fceux-2.6.6.orig/src/drivers/Qt/ConsoleDebugger.cpp fceux-2.6.6/src/drivers/Qt/ConsoleDebugger.cpp
+--- fceux-2.6.6.orig/src/drivers/Qt/ConsoleDebugger.cpp	2023-08-26 19:04:21.000000000 +0200
++++ fceux-2.6.6/src/drivers/Qt/ConsoleDebugger.cpp	2025-03-27 12:48:46.347182309 +0100
+@@ -22,6 +22,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <cmath>
+ #include <string>
+ #include <list>
+ 

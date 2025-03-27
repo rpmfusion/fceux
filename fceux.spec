@@ -3,7 +3,7 @@
 
 Name:           fceux
 Version:        2.6.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A cross platform, NTSC and PAL Famicom/NES emulator
 
 License:        GPLv2+
@@ -13,6 +13,8 @@ Patch0:         gcc13.patch
 # Added feature macro __FCEU_X86_TSC_ENABLE to enable usage of the X86 TSC
 # https://github.com/TASEmulators/fceux/issues/663
 Patch1:         fceux-2.6.6-timestamp-nonx86.patch
+# Add cmath include
+Patch2:         fceux-2.6.6-gcc15.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
@@ -117,6 +119,9 @@ desktop-file-validate \
 
 
 %changelog
+* Thu Mar 27 2025 Andrea Musuruane <musuruan@gmail.com> - 2.6.6-9
+- Fix FTBFS with GCC 15
+
 * Tue Jan 28 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 2.6.6-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
 
