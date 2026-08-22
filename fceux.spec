@@ -15,6 +15,8 @@ Patch0:         gcc13.patch
 Patch1:         fceux-2.6.6-timestamp-nonx86.patch
 # Add cmath include
 Patch2:         fceux-2.6.6-gcc15.patch
+# Based on https://github.com/TASEmulators/fceux/pull/850
+Patch3:         ffmpeg9.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
